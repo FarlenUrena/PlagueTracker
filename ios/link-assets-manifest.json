@@ -1,0 +1,33 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/MartelSans-Black.ttf",
+      "sha1": "1ef39fe4c4a4f7e0e95e70c58b74e6b66876b615"
+    },
+    {
+      "path": "assets/fonts/MartelSans-Bold.ttf",
+      "sha1": "6f7c22b61aef2390eba663a8c0ae758db47b22d5"
+    },
+    {
+      "path": "assets/fonts/MartelSans-ExtraBold.ttf",
+      "sha1": "30723743b8b22a3abba59fc3440536b5962ea96c"
+    },
+    {
+      "path": "assets/fonts/MartelSans-ExtraLight.ttf",
+      "sha1": "a7a3751e2137f2964e73c7bf35d97319b40e7a77"
+    },
+    {
+      "path": "assets/fonts/MartelSans-Light.ttf",
+      "sha1": "8a543606f560b1b85fc7581f1a3dea4483fcea85"
+    },
+    {
+      "path": "assets/fonts/MartelSans-Regular.ttf",
+      "sha1": "e773f925655e58afd93289ae82d43c781a2621ea"
+    },
+    {
+      "path": "assets/fonts/MartelSans-SemiBold.ttf",
+      "sha1": "967f508e0165d9f16e966dc6a68854240711b9ed"
+    }
+  ]
+}
