@@ -77,7 +77,7 @@ export default function MainScreen(props) {
       icon: contacto_icon,
       screen: 'ContactScreen',
     },
-    {name: 'Foro para Productores', icon: foro_icon, screen: 'ForumScreen'},
+    {name: 'Foro para Productores', icon: foro_icon, screen: 'Forum'},
     {
       name: 'Salir',
       icon: salir_icon,

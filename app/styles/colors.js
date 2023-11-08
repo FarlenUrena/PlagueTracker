@@ -3,7 +3,7 @@ export default {
   GREEN: '#006414',
   GREEN_LIME: '#009929',
   GREEN_LIGHT: '#5ccb5f',
-  GREEN_SKY: '#D4FCD3',
+  GREEN_SKY: '#E3F5E3',
   GREEN_PALE: '#E7F4D9',
   GREEN_SLOW: '#f3fff3',
   WHITE: '#FFF',
