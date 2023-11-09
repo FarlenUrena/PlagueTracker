@@ -235,16 +235,16 @@ export default function ForumScreen(props) {
             {/* Agrega más campos de formulario según tus necesidades */}
             <View style={styles.buttonRow}>
               <Button
-                title="Agregar Foro"
-                onPress={handleSubmit}
-                style={styles.button}
-                color={color.GREEN} // Cambia el color a verde
-              />
-              <Button
                 title="Cancelar"
                 onPress={closeForm}
                 style={styles.button}
                 color={color.RED} // Cambia el color a verde
+              />
+              <Button
+                title="Agregar Foro"
+                onPress={handleSubmit}
+                style={styles.button}
+                color={color.GREEN} // Cambia el color a verde
               />
             </View>
           </View>
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   },
   likesCount: {
     marginLeft: 5,
-    fontSize: 14,
+    fontSize: 20,
     color: 'black',
     fontWeight: 'bold',
   },
