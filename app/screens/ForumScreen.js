@@ -7,12 +7,27 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Modal,
+  Button,
 } from 'react-native';
 import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
+import {Picker} from '@react-native-picker/picker';
 
 export default function ForumScreen(props) {
   const [searchTerm, setSearchTerm] = useState(''); // Estado para la barra de búsqueda
+  const [isAddingForum, setIsAddingForum] = useState(false); // Estado para controlar la visualización del formulario
+  const [newForumData, setNewForumData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    replyCount: 0,
+    group: '',
+    likes: 0,
+    creator: '',
+  });
+
   const forumData = [
     {
       title: 'Foro 1',
@@ -105,10 +120,18 @@ export default function ForumScreen(props) {
   );
 
   const handleAddForumEntry = () => {
-    // Agrega aquí la lógica para abrir una pantalla de creación de una nueva entrada en el foro
-    // Por ejemplo, puedes navegar a una pantalla de creación de entrada.
-    // Todo Create new forum
-    console.log('Todo// Create new forum');
+    setIsAddingForum(true); // Abre el formulario al presionar el botón
+  };
+
+  const closeForm = () => {
+    setIsAddingForum(false); // Cierra el formulario
+  };
+
+  const handleSubmit = () => {
+    const newForum = {...newForumData};
+    // Agrega aquí la lógica para agregar el nuevo foro a la lista de foros
+    forumData.push(newForum);
+    closeForm(); // Cierra el formulario después de agregar un nuevo foro
   };
 
   return (
@@ -128,9 +151,10 @@ export default function ForumScreen(props) {
         {/* Barra de búsqueda */}
         <TextInput
           style={styles.searchBar}
-          placeholder="Buscar en el foro"
+          placeholder="Buscar foro"
           value={searchTerm}
           onChangeText={text => setSearchTerm(text)}
+          placeholderTextColor={color.BLACK}
         />
         {filteredForumData.map((forum, index) => (
           <View style={styles.card} key={index}>
@@ -151,10 +175,6 @@ export default function ForumScreen(props) {
                 <Text style={styles.likesCount}>{forum.likes} 💚</Text>
               </View>
             </View>
-            {/* <Image
-      source={require('./forum-image.jpg')}
-      style={styles.image}
-    /> */}
           </View>
         ))}
       </ScrollView>
@@ -162,11 +182,80 @@ export default function ForumScreen(props) {
       <TouchableOpacity style={styles.fab} onPress={handleAddForumEntry}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      {/* Modal para el formulario de nuevo foro */}
+      <Modal
+        visible={isAddingForum}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeForm}>
+        <View style={styles.modalContainer}>
+          <View style={styles.formContainer}>
+            <Text style={styles.formHeader}>
+              Crear nueva entrada para el foro
+            </Text>
+            <Text style={styles.label}>Título:</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Título"
+              value={newForumData.title}
+              onChangeText={text =>
+                setNewForumData({...newForumData, title: text})
+              }
+              placeholderTextColor={color.BLACK}
+            />
+            <Text style={styles.label}>Descripción:</Text>
+            <TextInput
+              style={styles.formInputArea}
+              placeholder="Descripción"
+              value={newForumData.description}
+              onChangeText={text =>
+                setNewForumData({...newForumData, description: text})
+              }
+              multiline={true} // Habilita el campo de texto multilínea
+              numberOfLines={4} // Especifica el número de líneas que se mostrarán inicialmente
+              placeholderTextColor={color.BLACK}
+            />
+            {/* Selector de grupo */}
+            <Text style={styles.label}>Grupo a asociar:</Text>
+            <Picker
+              color="black"
+              selectionColor="black"
+              mode="dropdown"
+              selectedValue={newForumData.group}
+              onValueChange={(itemValue, itemIndex) =>
+                setNewForumData({...newForumData, group: itemValue})
+              }
+              dropdownIconColor="black"
+              style={styles.groupPicker}>
+              <Picker.Item label="Plagas" value="Plagas" />
+              <Picker.Item label="Peces" value="Peces" />
+              <Picker.Item label="Plantas" value="Plantas" />
+            </Picker>
+            {/* Agrega más campos de formulario según tus necesidades */}
+            <View style={styles.buttonRow}>
+              <Button
+                title="Agregar Foro"
+                onPress={handleSubmit}
+                style={styles.button}
+                color={color.GREEN} // Cambia el color a verde
+              />
+              <Button
+                title="Cancelar"
+                onPress={closeForm}
+                style={styles.button}
+                color={color.RED} // Cambia el color a verde
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Estilos para tus tarjetas de foro
   card: {
     flexDirection: 'row',
     backgroundColor: color.GREEN_SKY,
@@ -178,30 +267,119 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-  },
-  cardContent: {
-    flex: 1,
+  // Estilos para la barra de búsqueda
+  searchBar: {
+    height: 40,
+    margin: 10,
     padding: 10,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 8,
+    color: color.BLACK,
+    backgroundColor: color.GREEN_SKY,
   },
-  header: {
+  // Estilos para el botón flotante
+  fab: {
+    width: 60,
+    height: 60,
+    backgroundColor: color.GREEN,
+    borderRadius: 30,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+  },
+  fabText: {
+    fontSize: 30,
+    color: '#fff',
+  },
+  // Estilos para el modal y el formulario
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  formContainer: {
+    width: '80%', // Ancho máximo del 80% de la pantalla
+    backgroundColor: color.GREEN_SKY,
+    padding: 20,
+    borderRadius: 8,
+    alignItems: 'center', // Centra el contenido horizontalmente en el formulario
+  },
+  formInput: {
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    borderRadius: 8,
+    padding: 10,
+    color: color.BLACK,
+  },
+  formInputArea: {
+    width: '100%',
+    height: 100, // Ajusta la altura según tus preferencias
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    borderRadius: 8,
+    padding: 10,
+    color: color.BLACK,
+  },
+  groupPicker: {
+    width: '100%',
+    height: 40,
+    borderColor: 'black', // Color del borde
+    borderWidth: 1,
+    marginBottom: 10,
+    borderRadius: 8,
+    color: color.BLACK,
+    opacity: 0.5,
+  },
+  label: {
+    fontSize: 16,
+    color: 'black',
+    marginBottom: 5,
+    fontWeight: 'bold',
+  },
+  formHeader: {
+    fontSize: 25,
+    color: color.GREEN,
+    marginBottom: 25,
+    fontWeight: 'bold',
+  },
+  buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: 10,
+    gap: 20,
   },
+  button: {
+    flex: 1,
+    margin: 5,
+  },
+  // Estilos para los detalles del foro
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: 'black',
   },
   description: {
     fontSize: 16,
-    color: 'gray',
+    color: 'black',
+  },
+  infoContainer: {
+    flexDirection: 'row',
   },
   info: {
+    fontSize: 13,
+    color: 'black',
+    marginRight: 10,
+  },
+  creator: {
     fontSize: 13,
     color: 'darkgray',
   },
@@ -212,36 +390,7 @@ const styles = StyleSheet.create({
   likesCount: {
     marginLeft: 5,
     fontSize: 14,
-  },
-  creator: {
-    marginLeft: 10 /* Establece el margen izquierdo para separar el nombre del creador de la fecha */,
-    fontSize: 16,
+    color: 'black',
     fontWeight: 'bold',
-  },
-  // Estilos para la barra de búsqueda
-  searchBar: {
-    height: 40,
-    margin: 10,
-    padding: 10,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  // Estilos para el botón flotante
-  fab: {
-    width: 60,
-    height: 60,
-    backgroundColor: color.GREEN, // Color de fondo del botón
-    borderRadius: 30, // Hace que el botón sea circular
-    position: 'absolute',
-    bottom: 20, // Ajusta la posición vertical según sea necesario
-    right: 20, // Ajusta la posición horizontal según sea necesario
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-  },
-  fabText: {
-    fontSize: 30,
-    color: '#fff', // Color del texto del botón
   },
 });
