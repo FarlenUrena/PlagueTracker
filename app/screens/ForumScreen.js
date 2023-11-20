@@ -14,6 +14,12 @@ import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
 import {Picker} from '@react-native-picker/picker';
 
+function goToScreen(props, routeName, forumId) {
+  props.navigation.navigate(routeName, {
+    forumId: forumId,
+  });
+}
+
 export default function ForumScreen(props) {
   const [searchTerm, setSearchTerm] = useState(''); // Estado para la barra de búsqueda
   const [isAddingForum, setIsAddingForum] = useState(false); // Estado para controlar la visualización del formulario
@@ -30,6 +36,7 @@ export default function ForumScreen(props) {
 
   const forumData = [
     {
+      id: 1,
       title: 'Foro 1',
       description: 'Descripción del foro 1...',
       date: '08/11/2023',
@@ -40,6 +47,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 2,
       title: 'Foro 2',
       description: 'Descripción del foro 2...',
       date: '09/11/2023',
@@ -50,6 +58,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 3,
       title: 'Foro 3',
       description: 'Descripción del foro 3...',
       date: '09/11/2023',
@@ -60,6 +69,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 4,
       title: 'Foro 4',
       description: 'Descripción del foro 4...',
       date: '09/11/2023',
@@ -70,6 +80,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 5,
       title: 'Foro 5',
       description: 'Descripción del foro 5...',
       date: '09/11/2023',
@@ -80,6 +91,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 6,
       title: 'Foro 6',
       description: 'Descripción del foro 6...',
       date: '09/11/2023',
@@ -90,6 +102,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 7,
       title: 'Foro 7',
       description: 'Descripción del foro 7...',
       date: '09/11/2023',
@@ -100,6 +113,7 @@ export default function ForumScreen(props) {
       creator: 'John Doe', // Creador
     },
     {
+      id: 8,
       title: 'Foro 8',
       description: 'Descripción del foro 8...',
       date: '09/11/2023',
@@ -157,25 +171,31 @@ export default function ForumScreen(props) {
           placeholderTextColor={color.BLACK}
         />
         {filteredForumData.map((forum, index) => (
-          <View style={styles.card} key={index}>
-            <View style={styles.cardContent}>
-              <View style={styles.header}>
-                <Text style={styles.title}>{forum.title}</Text>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.info}>
-                    {forum.date}, {forum.time}
-                  </Text>
-                  <Text style={styles.creator}>{forum.creator}</Text>
+          <TouchableOpacity
+            style={styles.card}
+            key={index}
+            onPress={() => goToScreen(props, 'ForumDetail', forum.id)} // Llama a una función con el ID del foro
+          >
+            <View style={styles.card} key={index}>
+              <View style={styles.cardContent}>
+                <View style={styles.header}>
+                  <Text style={styles.title}>{forum.title}</Text>
+                  <View style={styles.infoContainer}>
+                    <Text style={styles.info}>
+                      {forum.date}, {forum.time}
+                    </Text>
+                    <Text style={styles.creator}>{forum.creator}</Text>
+                  </View>
+                </View>
+                <Text style={styles.info}>Respuestas: {forum.replyCount}</Text>
+                <Text style={styles.info}>Grupo: {forum.group}</Text>
+                <Text style={styles.description}>{forum.description}</Text>
+                <View style={styles.likesContainer}>
+                  <Text style={styles.likesCount}>{forum.likes} 💚</Text>
                 </View>
               </View>
-              <Text style={styles.info}>Respuestas: {forum.replyCount}</Text>
-              <Text style={styles.info}>Grupo: {forum.group}</Text>
-              <Text style={styles.description}>{forum.description}</Text>
-              <View style={styles.likesContainer}>
-                <Text style={styles.likesCount}>{forum.likes} 💚</Text>
-              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
       {/* Botón flotante para agregar una nueva entrada */}
@@ -257,6 +277,7 @@ export default function ForumScreen(props) {
 const styles = StyleSheet.create({
   // Estilos para tus tarjetas de foro
   card: {
+    width: '100%',
     flexDirection: 'row',
     backgroundColor: color.GREEN_SKY,
     borderRadius: 8,

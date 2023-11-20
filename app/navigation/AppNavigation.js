@@ -7,6 +7,7 @@ import RecoverPasswordScreen from '@screens/RecoverPasswordScreen';
 import RegisterScreen from '@screens/RegisterScreen';
 import SettingsScreen from '@screens/SettingsScreen';
 import ForumScreen from '@screens/ForumScreen';
+import ForumDetailScreen from '@screens/ForumDetailScreen';
 
 const AppNavigation = createStackNavigator({
   Splash: {
@@ -47,6 +48,12 @@ const AppNavigation = createStackNavigator({
   },
   Forum: {
     screen: ForumScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  ForumDetail: {
+    screen: ForumDetailScreen,
     navigationOptions: {
       headerShown: false,
     },

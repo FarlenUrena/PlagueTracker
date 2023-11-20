@@ -7,6 +7,7 @@ export default {
   GREEN_PALE: '#E7F4D9',
   GREEN_SLOW: '#f3fff3',
   WHITE: '#FFF',
+  WHITE_GRAY: '#f0f0f0',
   SECONDARY: '#FFF',
   BLACK: '#0F0F0F',
   BLACKSECONDARY: '#371402',
@@ -18,4 +19,5 @@ export default {
   ORANGE: '#ff5204',
   YELLOW1: '#FBC02D',
   YELLOW2: '#FFEB3B',
+  GRAY_HARD: '#274945',
 };
