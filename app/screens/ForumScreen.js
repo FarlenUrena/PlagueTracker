@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   Text,
   View,
@@ -13,6 +13,17 @@ import {
 import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
 import {Picker} from '@react-native-picker/picker';
+import {initializeApp} from 'firebase/app';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import {UserContext} from '@context/UserContext';
+import {firebaseConfig} from '../../firebase-config';
+import {ActivityIndicator} from 'react-native';
 
 function goToScreen(props, routeName, forumId) {
   props.navigation.navigate(routeName, {
@@ -21,110 +32,23 @@ function goToScreen(props, routeName, forumId) {
 }
 
 export default function ForumScreen(props) {
+  const app = initializeApp(firebaseConfig);
+  const firestore = getFirestore(app);
+
   const [searchTerm, setSearchTerm] = useState(''); // Estado para la barra de búsqueda
   const [isAddingForum, setIsAddingForum] = useState(false); // Estado para controlar la visualización del formulario
   const [newForumData, setNewForumData] = useState({
     title: '',
     description: '',
-    date: '',
-    time: '',
+    createdAt: serverTimestamp(), // Cambia esto según la estructura real de tu objeto
     replyCount: 0,
     group: '',
     likes: 0,
     creator: '',
   });
-
-  const forumData = [
-    {
-      id: 1,
-      title: 'Foro 1',
-      description: 'Descripción del foro 1...',
-      date: '08/11/2023',
-      time: '14:30',
-      replyCount: 5,
-      group: 'Plagas',
-      likes: 10, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 2,
-      title: 'Foro 2',
-      description: 'Descripción del foro 2...',
-      date: '09/11/2023',
-      time: '15:30',
-      replyCount: 3,
-      group: 'Peces',
-      likes: 8, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 3,
-      title: 'Foro 3',
-      description: 'Descripción del foro 3...',
-      date: '09/11/2023',
-      time: '15:30',
-      replyCount: 3,
-      group: 'Plantas',
-      likes: 0, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 4,
-      title: 'Foro 4',
-      description: 'Descripción del foro 4...',
-      date: '09/11/2023',
-      time: '16:30',
-      replyCount: 3,
-      group: 'Plantas',
-      likes: 6, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 5,
-      title: 'Foro 5',
-      description: 'Descripción del foro 5...',
-      date: '09/11/2023',
-      time: '17:30',
-      replyCount: 3,
-      group: 'Peces',
-      likes: 2, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 6,
-      title: 'Foro 6',
-      description: 'Descripción del foro 6...',
-      date: '09/11/2023',
-      time: '15:30',
-      replyCount: 3,
-      group: 'Peces',
-      likes: 4, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 7,
-      title: 'Foro 7',
-      description: 'Descripción del foro 7...',
-      date: '09/11/2023',
-      time: '15:30',
-      replyCount: 3,
-      group: 'Peces',
-      likes: 4, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    {
-      id: 8,
-      title: 'Foro 8',
-      description: 'Descripción del foro 8...',
-      date: '09/11/2023',
-      time: '15:30',
-      replyCount: 3,
-      group: 'Peces',
-      likes: 4, // Cantidad de likes
-      creator: 'John Doe', // Creador
-    },
-    // Agrega más elementos de foro si es necesario
-  ];
+  const [loading, setLoading] = useState(true);
+  const [forumData, setForumData] = useState([]);
+  const [login, loginAction, auth] = useContext(UserContext);
 
   const filteredForumData = forumData.filter(forum =>
     // Convierte todos los valores de los campos a minúsculas para hacer una búsqueda sin distinción entre mayúsculas y minúsculas
@@ -133,71 +57,156 @@ export default function ForumScreen(props) {
     ),
   );
 
+  const formatTimestamp = timestamp => {
+    if (!timestamp || !timestamp.toDate) return '';
+
+    const date = timestamp.toDate(); // Convierte el timestamp a objeto Date
+    const formattedDate = date.toLocaleDateString();
+    const formattedTime = date.toLocaleTimeString();
+
+    return `${formattedDate}, ${formattedTime}`;
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getDocs(collection(firestore, 'Forum'));
+        const forums = data.docs.map(doc => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setForumData(forums);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener datos del foro:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  // async function loadRTForum() {
+  //   const subscriber = firebase()
+  //     .collection('Forum')
+  //     .onSnapshot(querySnapshot => {
+  //       const forums = [];
+
+  //       querySnapshot.forEach(element => {
+  //         forums.push({
+  //           ...element,
+  //           key: element.id,
+  //         });
+  //       });
+
+  //       setForumData(forums);
+  //     });
+
+  //   return () => subscriber();
+  // }
+
   const handleAddForumEntry = () => {
-    setIsAddingForum(true); // Abre el formulario al presionar el botón
+    setIsAddingForum(true);
   };
 
   const closeForm = () => {
-    setIsAddingForum(false); // Cierra el formulario
+    setIsAddingForum(false);
+    setNewForumData({
+      title: '',
+      description: '',
+      createdAt: serverTimestamp(),
+      replyCount: 0,
+      group: '',
+      likes: 0,
+      creator: '',
+    });
   };
 
-  const handleSubmit = () => {
-    const newForum = {...newForumData};
-    // Agrega aquí la lógica para agregar el nuevo foro a la lista de foros
-    forumData.push(newForum);
-    closeForm(); // Cierra el formulario después de agregar un nuevo foro
+  const handleSubmit = async () => {
+    try {
+      const newForum = {
+        title: newForumData.title,
+        description: newForumData.description,
+        createdAt: serverTimestamp(),
+        replyCount: newForumData.replyCount,
+        group: newForumData.group,
+        likes: newForumData.likes,
+        creator: newForumData.creator,
+      };
+
+      // Agrega el nuevo foro a la colección 'Forum' en Firebase
+      const docRef = await addDoc(collection(firestore, 'Forum'), newForum);
+
+      // Actualiza el estado local si es necesario (opcional)
+      setForumData(prevForumData => [
+        ...prevForumData,
+        {...newForum, id: docRef.id},
+      ]);
+    } catch (error) {
+      console.error('Error al agregar el foro:', error);
+    }
+
+    closeForm();
   };
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="always"
-        style={{backgroundColor: color.GREEN_SLOW}}>
-        <StatusBar backgroundColor={color.GREEN} translucent={true} />
-        <ToolBar
-          titulo="Plage Tracker"
-          onPressLeft={() => props.navigation.navigate('Settings')}
-          iconLeft={require('@resources/images/configuraciones_icon.png')}
-          onPressRight={() => props.navigation.navigate('Settings')}
-          iconRight={require('@resources/images/usuario_icon.png')}
+      {loading ? (
+        <ActivityIndicator
+          style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+          size="large"
+          color={color.GREEN}
         />
-        {/* Barra de búsqueda */}
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Buscar foro"
-          value={searchTerm}
-          onChangeText={text => setSearchTerm(text)}
-          placeholderTextColor={color.BLACK}
-        />
-        {filteredForumData.map((forum, index) => (
-          <TouchableOpacity
-            style={styles.card}
-            key={index}
-            onPress={() => goToScreen(props, 'ForumDetail', forum.id)} // Llama a una función con el ID del foro
-          >
-            <View style={styles.card} key={index}>
-              <View style={styles.cardContent}>
-                <View style={styles.header}>
-                  <Text style={styles.title}>{forum.title}</Text>
-                  <View style={styles.infoContainer}>
-                    <Text style={styles.info}>
-                      {forum.date}, {forum.time}
-                    </Text>
-                    <Text style={styles.creator}>{forum.creator}</Text>
+      ) : (
+        <ScrollView
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="always"
+          style={{backgroundColor: color.GREEN_SLOW}}>
+          <StatusBar backgroundColor={color.GREEN} translucent={true} />
+          <ToolBar
+            titulo="Plage Tracker"
+            onPressLeft={() => props.navigation.navigate('Settings')}
+            iconLeft={require('@resources/images/configuraciones_icon.png')}
+            onPressRight={() => props.navigation.navigate('Settings')}
+            iconRight={require('@resources/images/usuario_icon.png')}
+          />
+          {/* Barra de búsqueda */}
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Buscar foro"
+            value={searchTerm}
+            onChangeText={text => setSearchTerm(text)}
+            placeholderTextColor={color.BLACK}
+          />
+          {filteredForumData.map((forum, index) => (
+            <TouchableOpacity
+              style={styles.card}
+              key={index}
+              onPress={() => goToScreen(props, 'ForumDetail', forum.id)} // Llama a una función con el ID del foro
+            >
+              <View style={styles.card} key={index}>
+                <View style={styles.cardContent}>
+                  <View style={styles.header}>
+                    <Text style={styles.title}>{forum.title}</Text>
+                    <View style={styles.infoContainer}>
+                      <Text style={styles.info}>
+                        {forum.createdAt && formatTimestamp(forum.createdAt)}
+                      </Text>
+                      <Text style={styles.creator}>{forum.creator}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.info}>
+                    Respuestas: {forum.replyCount}
+                  </Text>
+                  <Text style={styles.info}>Grupo: {forum.group}</Text>
+                  <Text style={styles.description}>{forum.description}</Text>
+                  <View style={styles.likesContainer}>
+                    <Text style={styles.likesCount}>{forum.likes} 💚</Text>
                   </View>
                 </View>
-                <Text style={styles.info}>Respuestas: {forum.replyCount}</Text>
-                <Text style={styles.info}>Grupo: {forum.group}</Text>
-                <Text style={styles.description}>{forum.description}</Text>
-                <View style={styles.likesContainer}>
-                  <Text style={styles.likesCount}>{forum.likes} 💚</Text>
-                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
       {/* Botón flotante para agregar una nueva entrada */}
       <TouchableOpacity style={styles.fab} onPress={handleAddForumEntry}>
         <Text style={styles.fabText}>+</Text>

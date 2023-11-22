@@ -14,6 +14,7 @@ export const firebaseConfig = {
   storageBucket: STORAGE_BUCKET,
   messagingSenderId: MESSAGE_SENDER_ID,
   appId: APP_ID,
+  databaseURL: DATABASE_URL,
   // apiKey: 'AIzaSyBFCdDxN6NreX1JSnFeu1e1QbovR99fF6M',
   // authDomain: 'plague-tracker-82bd1.firebaseapp.com',
   // projectId: 'plague-tracker-82bd1',
