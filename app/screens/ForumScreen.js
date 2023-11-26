@@ -22,8 +22,8 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import {UserContext} from '@context/UserContext';
-import {firebaseConfig} from '../../firebase-config';
 import {ActivityIndicator} from 'react-native';
+import {firestore} from '../../firebase-config';
 
 function goToScreen(props, routeName, forumId) {
   props.navigation.navigate(routeName, {
@@ -32,8 +32,8 @@ function goToScreen(props, routeName, forumId) {
 }
 
 export default function ForumScreen(props) {
-  const app = initializeApp(firebaseConfig);
-  const firestore = getFirestore(app);
+  // const app = initializeApp(firebaseConfig);
+  // const firestore = getFirestore(app);
 
   const [searchTerm, setSearchTerm] = useState(''); // Estado para la barra de búsqueda
   const [isAddingForum, setIsAddingForum] = useState(false); // Estado para controlar la visualización del formulario

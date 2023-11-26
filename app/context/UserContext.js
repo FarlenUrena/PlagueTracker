@@ -4,7 +4,7 @@ import Snackbar from 'react-native-snackbar';
 import {initializeAuth, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {initializeApp} from 'firebase/app';
-import {firebaseConfig} from '../../firebase-config';
+import {app, firebaseConfig} from '../../firebase-config';
 
 const initialState = {
   usuario: {
@@ -46,7 +46,7 @@ const userReducer = (state = initialState, payload) => {
   }
 };
 
-const app = initializeApp(firebaseConfig);
+// const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });

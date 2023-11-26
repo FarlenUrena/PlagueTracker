@@ -7,6 +7,8 @@ import {
   MESSAGE_SENDER_ID,
   APP_ID,
 } from '@env';
+import {initializeApp} from 'firebase/app';
+import {getFirestore} from 'firebase/firestore';
 export const firebaseConfig = {
   apiKey: API_KEY,
   authDomain: AUTH_DOMAIN,
@@ -22,6 +24,11 @@ export const firebaseConfig = {
   // messagingSenderId: '1037866672844',
   // appId: '1:1037866672844:web:82974ca45daebc57db9869',
 };
+
+const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
+
+export {app, firestore};
 
 //Don't remove
 // IOS: 899363192883-m2vmgnqng0bk1v7atptk6tlk4jq94kso.apps.googleusercontent.com

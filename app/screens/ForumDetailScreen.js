@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import {
   serverTimestamp,
   doc,
   getDoc,
+  updateDoc,
 } from 'firebase/firestore';
 import {firebaseConfig} from '../../firebase-config';
 import {formatTimestamp} from '../utils/timestampFormatter';
@@ -31,17 +32,12 @@ export default function ForumDetailScreen(props) {
   const {navigation} = props;
   const forumId = JSON.stringify(navigation.getParam('forumId', 'NO-ID'));
   const cleanForumId = forumId.replace(/"/g, '');
-  const [forumEntry, setForumEntry] = useState({
-    user: 'Nombre de Usuario',
-    text: 'Contenido del Foro Contenido del Foro Contenido del Foro Contenido del Foro',
-    timestamp: 'Hoy 9:45 AM',
-    likes: 15,
-    isLiked: false, // Puedes establecer esto según el estado del usuario
-    group: 'Nombre del Grupo',
-  });
+  const [forumEntry, setForumEntry] = useState({});
 
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [isSending, setIsSending] = useState(false); // Nuevo estado
+  const scrollViewRef = useRef(null); // Referencia al componente ScrollView
 
   const fetchForum = async () => {
     try {
@@ -64,16 +60,18 @@ export default function ForumDetailScreen(props) {
     try {
       const uri = `/Forum/${cleanForumId}/comments`;
       const commentsSnapshot = await getDocs(collection(firestore, uri));
-      const commentsData = commentsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      console.log(cleanForumId);
+
+      // Ordena los comentarios por marca de tiempo en orden ascendente
+      const commentsData = commentsSnapshot.docs
+        .map(doc => ({id: doc.id, ...doc.data()}))
+        .sort((a, b) => a.timestamp - b.timestamp);
+
       setComments(commentsData);
     } catch (error) {
       console.error('Error al obtener comentarios:', error);
     }
   };
+
   useEffect(() => {
     fetchComments();
     fetchForum();
@@ -87,7 +85,53 @@ export default function ForumDetailScreen(props) {
     });
   };
 
-  const handleSendComment = async () => {};
+  const handleSendComment = async () => {
+    try {
+      setIsSending(true); // Establecer el estado de envío a true
+      const commentsCollectionRef = collection(
+        firestore,
+        `Forum/${cleanForumId}/comments`,
+      );
+
+      // Agrega un nuevo comentario a la colección de comentarios
+      await addDoc(commentsCollectionRef, {
+        user: 'Nombre de Usuario', // Reemplaza con el nombre de usuario real
+        text: newComment,
+        timestamp: serverTimestamp(),
+        likes: 0,
+      });
+
+      // const commentsCollectionRef = collection(
+      //   firestore,
+      //   `Forum/${cleanForumId}/comments`,
+      // );
+      const commentsSnapshot = await getDocs(commentsCollectionRef);
+      const currentCommentCount = commentsSnapshot.size;
+
+      // Aumentar la cantidad de comentarios
+      const newCommentCount = currentCommentCount + 1;
+
+      // Actualizar la base de datos con la nueva cantidad
+      await updateDoc(doc(firestore, `Forum/${cleanForumId}`), {
+        commentCount: newCommentCount,
+      });
+
+      // Esperar a que la base de datos se actualice antes de desplazarse hacia abajo
+      await fetchForum();
+      await fetchComments();
+      setNewComment('');
+
+      // Desplazar hacia abajo después de enviar el comentario
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollToEnd({animated: true});
+      }
+    } catch (error) {
+      console.error('Error al enviar comentario:', error);
+    } finally {
+      setIsSending(false); // Independientemente de si hubo un error o no, establecer el estado de envío a false
+    }
+  };
+
   const handleCommentLikeToggle = async (commentId, isLiked) => {};
 
   return (
@@ -159,7 +203,7 @@ export default function ForumDetailScreen(props) {
       </View>
 
       {/* ScrollView de Comentarios */}
-      <ScrollView style={{flex: 1}}>
+      <ScrollView ref={scrollViewRef} style={{flex: 1}}>
         {comments.map(comment => (
           <View
             key={comment.id}
@@ -221,8 +265,13 @@ export default function ForumDetailScreen(props) {
           value={newComment}
           onChangeText={setNewComment}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSendComment}>
-          <Text style={styles.sendButtonText}>Enviar</Text>
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={handleSendComment}
+          disabled={isSending}>
+          <Text style={styles.sendButtonText}>
+            {isSending ? 'Enviando...' : 'Enviar'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -280,7 +329,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   commentText: {
-    color:'black',
+    color: 'black',
     fontSize: 16,
   },
   commentTimestamp: {
