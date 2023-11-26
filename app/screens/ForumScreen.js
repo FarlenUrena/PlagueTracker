@@ -51,16 +51,20 @@ export default function ForumScreen(props) {
   const [login, loginAction, auth] = useContext(UserContext);
 
   const filteredForumData = forumData.filter(forum =>
-    // Convierte todos los valores de los campos a minúsculas para hacer una búsqueda sin distinción entre mayúsculas y minúsculas
-    Object.values(forum).some(field =>
-      field.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+    Object.values(forum).some(
+      field =>
+        field !== undefined &&
+        field !== null && // Asegura que el campo no sea null
+        field.toString().toLowerCase().includes(searchTerm.toLowerCase()),
     ),
   );
 
   const formatTimestamp = timestamp => {
     if (!timestamp || !timestamp.toDate) return '';
 
-    const date = timestamp.toDate(); // Convierte el timestamp a objeto Date
+    const date = timestamp.toDate();
+    if (!date) return '';
+
     const formattedDate = date.toLocaleDateString();
     const formattedTime = date.toLocaleTimeString();
 
@@ -72,7 +76,13 @@ export default function ForumScreen(props) {
       try {
         const data = await getDocs(collection(firestore, 'Forum'));
         const forums = data.docs.map(doc => ({
-          ...doc.data(),
+          title: doc.data().title,
+          description: doc.data().description,
+          createdAt: doc.data().createdAt,
+          replyCount: doc.data().replyCount,
+          group: doc.data().group,
+          likes: doc.data().likes,
+          creator: doc.data().creator,
           id: doc.id,
         }));
         setForumData(forums);

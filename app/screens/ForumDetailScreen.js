@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -11,11 +11,26 @@ import {
 } from 'react-native';
 import ToolBar from '../components/ToolBar';
 import color from '@styles/colors';
+import {initializeApp} from 'firebase/app';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+} from 'firebase/firestore';
+import {firebaseConfig} from '../../firebase-config';
+import {formatTimestamp} from '../utils/timestampFormatter';
 
 export default function ForumDetailScreen(props) {
+  const app = initializeApp(firebaseConfig);
+  const firestore = getFirestore(app);
+
   const {navigation} = props;
   const forumId = JSON.stringify(navigation.getParam('forumId', 'NO-ID'));
-
+  const cleanForumId = forumId.replace(/"/g, '');
   const [forumEntry, setForumEntry] = useState({
     user: 'Nombre de Usuario',
     text: 'Contenido del Foro Contenido del Foro Contenido del Foro Contenido del Foro',
@@ -25,94 +40,55 @@ export default function ForumDetailScreen(props) {
     group: 'Nombre del Grupo',
   });
 
-  const comments = [
-    {
-      id: 1,
-      user: 'Usuario1',
-      text: 'Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1Comentario 1 Comentario 1 Comentario 1',
-      timestamp: 'Hoy 10:30 AM',
-      isMine: true,
-    },
-    {
-      id: 2,
-      user: 'Usuario2',
-      text: 'Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2',
-      timestamp: 'Hoy 11:15 AM',
-      isMine: false,
-    },
-    {
-      id: 1,
-      user: 'Usuario1',
-      text: 'Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1Comentario 1 Comentario 1 Comentario 1',
-      timestamp: 'Hoy 10:30 AM',
-      isMine: true,
-    },
-    {
-      id: 2,
-      user: 'Usuario2',
-      text: 'Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2',
-      timestamp: 'Hoy 11:15 AM',
-      isMine: false,
-    },
-    {
-      id: 1,
-      user: 'Usuario1',
-      text: 'Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1Comentario 1 Comentario 1 Comentario 1',
-      timestamp: 'Hoy 10:30 AM',
-      isMine: true,
-    },
-    {
-      id: 2,
-      user: 'Usuario2',
-      text: 'Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2',
-      timestamp: 'Hoy 11:15 AM',
-      isMine: false,
-    },
-    {
-      id: 1,
-      user: 'Usuario1',
-      text: 'Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1 Comentario 1Comentario 1 Comentario 1 Comentario 1',
-      timestamp: 'Hoy 10:30 AM',
-      isMine: true,
-    },
-    {
-      id: 2,
-      user: 'Usuario2',
-      text: 'Comentario',
-      timestamp: 'Hoy 11:15 AM',
-      isMine: false,
-    },
-    {
-      id: 1,
-      user: 'Usuario1',
-      text: 'Comentario 1 ',
-      timestamp: 'Hoy 10:30 AM',
-      isMine: true,
-    },
-    {
-      id: 2,
-      user: 'Usuario2',
-      text: 'Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2 Comentario 2',
-      timestamp: 'Hoy 11:15 AM',
-      isMine: false,
-    },
-    // Agrega más comentarios según sea necesario
-  ];
-
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
 
-  const handleSendComment = () => {
-    // Agrega lógica para enviar el comentario
-    // Actualiza el estado o realiza la acción correspondiente
+  const fetchForum = async () => {
+    try {
+      const forumDocRef = doc(firestore, 'Forum', cleanForumId);
+      const forumDoc = await getDoc(forumDocRef);
+
+      if (forumDoc) {
+        const forumData = forumDoc.data();
+        console.log(forumData);
+        setForumEntry(forumData);
+      } else {
+        console.error('El documento del foro no existe.');
+      }
+    } catch (error) {
+      console.error('Error al obtener el foro:', error);
+    }
   };
 
-  const handleLikeToggle = () => {
+  const fetchComments = async () => {
+    try {
+      const uri = `/Forum/${cleanForumId}/comments`;
+      const commentsSnapshot = await getDocs(collection(firestore, uri));
+      const commentsData = commentsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(cleanForumId);
+      setComments(commentsData);
+    } catch (error) {
+      console.error('Error al obtener comentarios:', error);
+    }
+  };
+  useEffect(() => {
+    fetchComments();
+    fetchForum();
+  }, []);
+
+  const handleLikeToggle = async () => {
     setForumEntry({
       ...forumEntry,
       isLiked: !forumEntry.isLiked,
       likes: forumEntry.isLiked ? forumEntry.likes - 1 : forumEntry.likes + 1,
     });
   };
+
+  const handleSendComment = async () => {};
+  const handleCommentLikeToggle = async (commentId, isLiked) => {};
 
   return (
     <View style={{flex: 1, backgroundColor: color.GREEN_SLOW}}>
@@ -135,8 +111,9 @@ export default function ForumDetailScreen(props) {
         </View>
         <View style={styles.forumEntryContent}>
           <View style={styles.userInfoContainer}>
-            <Text style={[styles.commentUserName, {color: 'white'}]}>
-              {forumEntry.user}
+            <Text
+              style={[styles.commentUserName, {color: 'white', fontSize: 14}]}>
+              {forumEntry.creator}
             </Text>
             <Text
               style={[
@@ -145,11 +122,17 @@ export default function ForumDetailScreen(props) {
                   color: color.WHITE_GRAY,
                 },
               ]}>
-              {forumEntry.timestamp}
+              {forumEntry.createdAt && formatTimestamp(forumEntry.createdAt)}
             </Text>
           </View>
+          <Text style={[styles.commentUserName, {color: 'white'}]}>
+            {forumEntry.title}
+          </Text>
           <Text style={[styles.forumText, {color: 'white'}]}>
-            {forumEntry.text}
+            {forumEntry.description}
+          </Text>
+          <Text style={[styles.commentTimestamp, {color: color.GREEN_LIGHT}]}>
+            {forumEntry.group}
           </Text>
           <View style={styles.likesContainer}>
             <View style={styles.likesTextContainer}>
@@ -222,7 +205,7 @@ export default function ForumDetailScreen(props) {
                       color: color.GRAY,
                     },
                   ]}>
-                  {comment.timestamp}
+                  {comment.timestamp && formatTimestamp(comment.timestamp)}
                 </Text>
               </View>
             </View>
@@ -297,6 +280,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   commentText: {
+    color:'black',
     fontSize: 16,
   },
   commentTimestamp: {
