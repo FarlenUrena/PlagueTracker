@@ -164,7 +164,7 @@ export default function SuppliersScreen(props) {
           style={{backgroundColor: color.GREEN_SLOW}}>
           <StatusBar backgroundColor={color.GREEN} translucent={true} />
           <ToolBar
-            titulo="Plage Tracker"
+            titulo="Proveedores"
             onPressLeft={() => props.navigation.navigate('Settings')}
             iconLeft={require('@resources/images/configuraciones_icon.png')}
             onPressRight={() => props.navigation.navigate('Settings')}
@@ -262,7 +262,7 @@ export default function SuppliersScreen(props) {
               }
               placeholderTextColor={color.BLACK}
             />
-            <Text style={styles.label}>Numeros de Teléfonos:</Text>
+            <Text style={styles.label}>Numero de Teléfono:</Text>
             <TextInput
               style={styles.formInput}
               placeholder="Numero de Teléfono"
