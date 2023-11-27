@@ -60,7 +60,7 @@ export default function MainScreen(props) {
     {
       name: 'Condiciones de Reproducción',
       icon: condicion_reproduccion_icon,
-      screen: 'ReproductionScreen',
+      screen: 'Reproduction',
     },
     {
       name: 'Mapa de Afectación',
