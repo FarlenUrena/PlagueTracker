@@ -22,6 +22,7 @@ import directorio_icon from '@resources/images/directorio_icon.png';
 
 import contacto_icon from '@resources/images/contacto_icon.png';
 import foro_icon from '@resources/images/foro_icon.png';
+import usuarios_icon from '@resources/images/usuarios.png';
 import salir_icon from '@resources/images/salir_icon.png';
 import ToolBar from '../components/ToolBar';
 import colors from '../styles/colors';
@@ -78,6 +79,11 @@ export default function MainScreen(props) {
       screen: 'ContactScreen',
     },
     {name: 'Foro para Productores', icon: foro_icon, screen: 'Forum'},
+    {
+      name: 'Usuarios',
+      icon: usuarios_icon,
+      screen: 'Users',
+    },
     {
       name: 'Salir',
       icon: salir_icon,
