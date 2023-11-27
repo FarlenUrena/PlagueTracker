@@ -70,7 +70,7 @@ export default function MainScreen(props) {
     {
       name: 'Directorio de Proveedores',
       icon: directorio_icon,
-      screen: 'DirectoryScreen',
+      screen: 'Suppliers',
     },
     {
       name: 'Contacto con Expertos',
