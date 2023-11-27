@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,36 +9,71 @@ import {
   TextInput,
 } from 'react-native';
 
-// import Icon from 'react-native-vector-icons/FontAwesome'; // Ajusta la importación según el conjunto de iconos que estés utilizando
 import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
+import {doc, setDoc, getDoc} from 'firebase/firestore';
+import {collection, query, where, getDocs} from 'firebase/firestore';
+import {firestore} from '../../firebase-config';
 
-const mockUserData = [
-  {id: 1, name: 'Usuario 1', email: 'usuario1@example.com', roles: ['Usuario']},
-  {id: 2, name: 'Usuario 2', email: 'usuario2@example.com', roles: ['Empresa']},
-  // Agrega más usuarios según sea necesario
-];
-
-const roleOptions = ['Administrador', 'Usuario', 'Empresa'];
+const roleOptions = ['Admin', 'Business', 'User'];
 
 const UsersScreen = props => {
-  const [users, setUsers] = useState(mockUserData);
+  const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
 
-  const handleRoleToggle = (userId, role) => {
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === userId
-          ? {
-              ...user,
-              roles: user.roles.includes(role)
-                ? user.roles.filter(existingRole => existingRole !== role)
-                : [...user.roles, role],
-            }
-          : user,
-      ),
-    );
+  // Cargar usuarios desde Firestore al iniciar la pantalla
+  const loadUsers = async () => {
+    try {
+      const usersCollection = collection(firestore, 'Users');
+      const usersSnapshot = await getDocs(usersCollection);
+      const usersData = usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log('Users data:', usersData);
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const handleRoleToggle = async (userId, role) => {
+    try {
+      setUsers(prevUsers =>
+        prevUsers.map(user =>
+          user.id === userId
+            ? {
+                ...user,
+                roles: user.roles.includes(role)
+                  ? user.roles.filter(existingRole => existingRole !== role)
+                  : [...user.roles, role],
+              }
+            : user,
+        ),
+      );
+
+      // Obtén los datos existentes del usuario antes de la actualización
+      const existingUserData = users.find(user => user.id === userId);
+
+      // Actualizar roles y otros datos en Firestore
+      const userDocRef = doc(firestore, 'Users', userId);
+      await setDoc(userDocRef, {
+        ...existingUserData, // Mantener los datos existentes
+        roles: existingUserData.roles.includes(role)
+          ? existingUserData.roles.filter(existingRole => existingRole !== role)
+          : [...existingUserData.roles, role], // Actualizar solo los roles
+      });
+
+      // Recargar datos del usuario después de la actualización en Firestore
+      await loadUsers();
+    } catch (error) {
+      console.error('Error updating roles:', error);
+    }
   };
 
   const isRoleSelected = (userId, role) => {
@@ -76,8 +111,6 @@ const UsersScreen = props => {
       />
       <View style={styles.searchFilterContainer}>
         <View style={styles.searchInputContainer}>
-          {/* Ajusta la importación y el nombre del ícono según la librería que estés utilizando */}
-          {/* <Icon name="search" size={20} color={color.GRAY} /> */}
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar por nombre o email"
@@ -97,13 +130,15 @@ const UsersScreen = props => {
                   styles.filterOption,
                   {
                     backgroundColor:
-                      role === selectedRole ? color.GREEN : color.WHITE_GRAY,
+                      role === selectedRole
+                        ? color.GREEN_LIGHT
+                        : color.WHITE_GRAY,
                   },
                 ]}>
                 <Text
                   style={[
                     styles.filterOptionText,
-                    {color: role === selectedRole ? color.WHITE : color.BLACK},
+                    {color: role === selectedRole ? color.BLACK : color.BLACK},
                   ]}>
                   {role}
                 </Text>
@@ -117,7 +152,6 @@ const UsersScreen = props => {
         <View style={styles.tableContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.headerText}>Nombre/Correo</Text>
-            {/* <Text style={styles.headerText}>Correo Electrónico</Text> */}
             <Text style={styles.headerText}>Roles</Text>
           </View>
 
@@ -143,7 +177,6 @@ const UsersScreen = props => {
                           ✓
                         </Text>
                       )}
-
                       <Text style={styles.checkboxLabel}>{role}</Text>
                     </View>
                   </TouchableOpacity>
