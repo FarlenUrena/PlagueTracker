@@ -41,7 +41,7 @@ export default function MainScreen(props) {
   const [login, loginAction] = useContext(UserContext);
 
   const categories = [
-    {name: 'Catálogo de Plagas', icon: catalogo_icon, screen: 'Settings'},
+    {name: 'Catálogo de Plagas', icon: catalogo_icon, screen: 'Plagues'},
     {
       name: 'Identificación de Plagas',
       icon: lupa_icon,

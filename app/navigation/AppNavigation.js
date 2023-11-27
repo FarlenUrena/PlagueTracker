@@ -10,6 +10,7 @@ import ForumScreen from '@screens/ForumScreen';
 import ForumDetailScreen from '@screens/ForumDetailScreen';
 import ReproductionScreen from '@screens/ReproductionScreen';
 import SuppliersScreen from '@screens/SuppliersScreen';
+import PlaguesScreen from '@screens/PlaguesScreen';
 
 const AppNavigation = createStackNavigator({
   Splash: {
@@ -65,6 +66,12 @@ const AppNavigation = createStackNavigator({
   },
   Suppliers: {
     screen: SuppliersScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Plagues: {
+    screen: PlaguesScreen,
     navigationOptions: {
       headerShown: false,
     },
