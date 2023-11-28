@@ -10,6 +10,7 @@ import ForumScreen from '@screens/ForumScreen';
 import ForumDetailScreen from '@screens/ForumDetailScreen';
 import UsersScreen from '@screens/UsersScreen';
 import ProductsScreen from '@screens/ProductsScreen';
+import DealPestsScreen from '@screens/DealPestsScreen';
 
 const AppNavigation = createStackNavigator({
   Splash: {
@@ -68,6 +69,12 @@ const AppNavigation = createStackNavigator({
   },
   Products: {
     screen: ProductsScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  DealPests: {
+    screen: DealPestsScreen,
     navigationOptions: {
       headerShown: false,
     },

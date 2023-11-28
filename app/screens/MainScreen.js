@@ -51,7 +51,7 @@ export default function MainScreen(props) {
     {
       name: 'Cómo Enfrentar las Plagas',
       icon: control_plagas_icon,
-      screen: 'ConfrontScreen',
+      screen: 'DealPests',
     },
     {
       name: 'Productos Recomendados',
