@@ -27,7 +27,7 @@ import {Picker} from '@react-native-picker/picker';
 import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
 
-export default function ReproductionScreen(props) {
+export default function IdentifyPestsScreen(props) {
   const [pestName, setPestName] = useState('');
   const [cropName, setCropName] = useState('');
   const [pestsList, setPestsList] = useState([]);
@@ -163,7 +163,8 @@ export default function ReproductionScreen(props) {
         const pests = data.docs.map(doc => ({
           nombre: doc.data().nombre,
           cultivos: doc.data().cultivo,
-          condiciones_reproduccion: doc.data().condiciones_reproduccion,
+          descripcion: doc.data().descripcion,
+          signos_infestacion: doc.data().signos_infestacion,
         }));
         setForumData(pests);
         setLoading(false);
@@ -198,7 +199,7 @@ export default function ReproductionScreen(props) {
       keyboardShouldPersistTaps="always"
       style={styles.container}>
       <ToolBar
-        titulo="Cond. de Reproducción"
+        titulo="Identificar plagas"
         onPressLeft={() => props.navigation.navigate('Main')}
         iconLeft={require('@resources/images/back.png')}
         onPressRight={() => props.navigation.navigate('Settings')}
@@ -227,9 +228,10 @@ export default function ReproductionScreen(props) {
                   <Text style={styles.creator}>{pest.cultivos}</Text>
                 </View>
               </View>
-              <Text style={styles.info}>
-                Condiciones de reproduccion: {pest.condiciones_reproduccion}
-              </Text>
+              <Text style={styles.info}>¿Cómo identificar las plagas?</Text>
+              <Text style={styles.infoText}>{pest.descripcion}</Text>
+              <Text style={styles.info}>Signos de Infestación </Text>
+              <Text style={styles.infoText}>{pest.signos_infestacion}</Text>
             </View>
           </View>
         ))
@@ -320,7 +322,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   info: {
-    fontSize: 13,
+    marginTop: 8,
+    fontWeight: 'bold',
+    fontSize: 15,
+    color: color.GREEN,
+    marginRight: 10,
+  },
+  infoText: {
+    fontSize: 14,
     color: 'black',
     marginRight: 10,
   },

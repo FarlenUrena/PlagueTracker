@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import {
   View,
   Text,
@@ -24,8 +24,11 @@ import {
 } from 'firebase/firestore';
 import {firebaseConfig} from '../../firebase-config';
 import {formatTimestamp} from '../utils/timestampFormatter';
+import {UserContext} from '@context/UserContext';
 
 export default function ForumDetailScreen(props) {
+  
+  const [login, loginAction, auth] = useContext(UserContext);
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
 
@@ -95,7 +98,7 @@ export default function ForumDetailScreen(props) {
 
       // Agrega un nuevo comentario a la colección de comentarios
       await addDoc(commentsCollectionRef, {
-        user: 'Nombre de Usuario', // Reemplaza con el nombre de usuario real
+        user: 'Default', // Reemplaza con el nombre de usuario real
         text: newComment,
         timestamp: serverTimestamp(),
         likes: 0,
@@ -113,7 +116,7 @@ export default function ForumDetailScreen(props) {
 
       // Actualizar la base de datos con la nueva cantidad
       await updateDoc(doc(firestore, `Forum/${cleanForumId}`), {
-        commentCount: newCommentCount,
+        replyCount: newCommentCount,
       });
 
       // Esperar a que la base de datos se actualice antes de desplazarse hacia abajo
@@ -138,9 +141,9 @@ export default function ForumDetailScreen(props) {
     <View style={{flex: 1, backgroundColor: color.GREEN_SLOW}}>
       <StatusBar backgroundColor={color.GREEN} translucent={true} />
       <ToolBar
-        titulo={`Detalle del foro ${forumId}`}
-        onPressLeft={() => props.navigation.navigate('Settings')}
-        iconLeft={require('@resources/images/configuraciones_icon.png')}
+        titulo={'Comentarios'}
+        onPressLeft={() => props.navigation.navigate('Main')}
+        iconLeft={require('@resources/images/back.png')}
         onPressRight={() => props.navigation.navigate('Settings')}
         iconRight={require('@resources/images/usuario_icon.png')}
       />
@@ -204,57 +207,66 @@ export default function ForumDetailScreen(props) {
 
       {/* ScrollView de Comentarios */}
       <ScrollView ref={scrollViewRef} style={{flex: 1}}>
-        {comments.map(comment => (
-          <View
-            key={comment.id}
-            style={[
-              styles.commentContainer,
-              {
-                justifyContent: comment.isMine ? 'flex-end' : 'flex-start',
-              },
-            ]}>
-            <View style={styles.commentContent}>
-              <View
-                style={[
-                  styles.commentBubble,
-                  {
-                    alignSelf: comment.isMine ? 'flex-end' : 'flex-start',
-                    borderBottomLeftRadius: comment.isMine ? 16 : 0,
-                    borderBottomRightRadius: comment.isMine ? 0 : 16,
-                    backgroundColor: comment.isMine
-                      ? color.GREEN_SKY
-                      : color.SECONDARY,
-                  },
-                ]}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  {/* Avatar a la derecha */}
-                  <View style={styles.avatarContainer}>
-                    <Image
-                      source={require('@resources/images/usuario_icon.png')}
-                      style={styles.avatar}
-                    />
-                  </View>
-                  {/* Nombre a la izquierda */}
-                  <View style={{marginLeft: 8}}>
-                    <Text style={[styles.commentUserName, {color: 'black'}]}>
-                      {comment.user}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.commentText}>{comment.text}</Text>
-                <Text
+        {comments.length === 0 ? (
+          <View style={styles.noCommentsContainer}>
+            <Text style={styles.noCommentsText}>No hay comentarios aún :c</Text>
+            <Text style={styles.noCommentsText}>
+              ¡Sé el primero en comentar!
+            </Text>
+          </View>
+        ) : (
+          comments.map(comment => (
+            <View
+              key={comment.id}
+              style={[
+                styles.commentContainer,
+                {
+                  justifyContent: comment.isMine ? 'flex-end' : 'flex-start',
+                },
+              ]}>
+              <View style={styles.commentContent}>
+                <View
                   style={[
-                    styles.commentTimestamp,
+                    styles.commentBubble,
                     {
-                      color: color.GRAY,
+                      alignSelf: comment.isMine ? 'flex-end' : 'flex-start',
+                      borderBottomLeftRadius: comment.isMine ? 16 : 0,
+                      borderBottomRightRadius: comment.isMine ? 0 : 16,
+                      backgroundColor: comment.isMine
+                        ? color.GREEN_SKY
+                        : color.SECONDARY,
                     },
                   ]}>
-                  {comment.timestamp && formatTimestamp(comment.timestamp)}
-                </Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    {/* Avatar a la derecha */}
+                    <View style={styles.avatarContainer}>
+                      <Image
+                        source={require('@resources/images/usuario_icon.png')}
+                        style={styles.avatar}
+                      />
+                    </View>
+                    {/* Nombre a la izquierda */}
+                    <View style={{marginLeft: 8}}>
+                      <Text style={[styles.commentUserName, {color: 'black'}]}>
+                        {comment.user}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.commentText}>{comment.text}</Text>
+                  <Text
+                    style={[
+                      styles.commentTimestamp,
+                      {
+                        color: color.GRAY,
+                      },
+                    ]}>
+                    {comment.timestamp && formatTimestamp(comment.timestamp)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
 
       {/* Entrada de Comentario */}
@@ -390,5 +402,18 @@ const styles = StyleSheet.create({
   likesButtonText: {
     marginLeft: 8,
     color: color.BLACK,
+  },
+
+  //No comments
+
+  noCommentsContainer: {
+    flex: 1,
+    marginTop: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noCommentsText: {
+    fontSize: 18,
+    color: color.GRAY,
   },
 });

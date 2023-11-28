@@ -22,6 +22,7 @@ import directorio_icon from '@resources/images/directorio_icon.png';
 
 import contacto_icon from '@resources/images/contacto_icon.png';
 import foro_icon from '@resources/images/foro_icon.png';
+import usuarios_icon from '@resources/images/usuarios.png';
 import salir_icon from '@resources/images/salir_icon.png';
 import ToolBar from '../components/ToolBar';
 import colors from '../styles/colors';
@@ -45,39 +46,44 @@ export default function MainScreen(props) {
     {
       name: 'Identificación de Plagas',
       icon: lupa_icon,
-      screen: 'IdentificationScreen',
+      screen: 'IdentifyPests',
     },
     {
       name: 'Cómo Enfrentar las Plagas',
       icon: control_plagas_icon,
-      screen: 'ConfrontScreen',
+      screen: 'DealPests',
     },
     {
       name: 'Productos Recomendados',
       icon: productos_icon,
-      screen: 'ProductsScreen',
+      screen: 'Products',
     },
     {
       name: 'Condiciones de Reproducción',
       icon: condicion_reproduccion_icon,
       screen: 'Reproduction',
     },
-    {
-      name: 'Mapa de Afectación',
-      icon: mapa_afectacion_icon,
-      screen: 'MapScreen',
-    },
+    // {
+    //   name: 'Mapa de Afectación',
+    //   icon: mapa_afectacion_icon,
+    //   screen: 'MapScreen',
+    // },
     {
       name: 'Directorio de Proveedores',
       icon: directorio_icon,
       screen: 'Suppliers',
     },
-    {
-      name: 'Contacto con Expertos',
-      icon: contacto_icon,
-      screen: 'ContactScreen',
-    },
+    // {
+    //   name: 'Contacto con Expertos',
+    //   icon: contacto_icon,
+    //   screen: 'ContactScreen',
+    // },
     {name: 'Foro para Productores', icon: foro_icon, screen: 'Forum'},
+    {
+      name: 'Usuarios',
+      icon: usuarios_icon,
+      screen: 'Users',
+    },
     {
       name: 'Salir',
       icon: salir_icon,

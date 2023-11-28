@@ -11,6 +11,10 @@ import ForumDetailScreen from '@screens/ForumDetailScreen';
 import ReproductionScreen from '@screens/ReproductionScreen';
 import SuppliersScreen from '@screens/SuppliersScreen';
 import PlaguesScreen from '@screens/PlaguesScreen';
+import UsersScreen from '@screens/UsersScreen';
+import ProductsScreen from '@screens/ProductsScreen';
+import DealPestsScreen from '@screens/DealPestsScreen';
+import IdentifyPestsScreen from '@screens/IdentifyPestsScreen';
 
 const AppNavigation = createStackNavigator({
   Splash: {
@@ -63,6 +67,15 @@ const AppNavigation = createStackNavigator({
   },
   Reproduction: {
     screen: ReproductionScreen,
+   navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Users: {
+    screen: UsersScreen,
+   navigationOptions: {
+      headerShown: false,
+    },
   },
   Suppliers: {
     screen: SuppliersScreen,
@@ -70,8 +83,27 @@ const AppNavigation = createStackNavigator({
       headerShown: false,
     },
   },
+
   Plagues: {
     screen: PlaguesScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Products: {
+    screen: ProductsScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  DealPests: {
+    screen: DealPestsScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  IdentifyPests: {
+    screen: IdentifyPestsScreen,
     navigationOptions: {
       headerShown: false,
     },
