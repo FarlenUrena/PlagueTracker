@@ -104,8 +104,8 @@ const UsersScreen = props => {
       <StatusBar backgroundColor={color.GREEN} translucent={true} />
       <ToolBar
         titulo="Plage Tracker"
-        onPressLeft={() => props.navigation.navigate('Settings')}
-        iconLeft={require('@resources/images/configuraciones_icon.png')}
+        onPressLeft={() => props.navigation.navigate('Main')}
+        iconLeft={require('@resources/images/back.png')}
         onPressRight={() => props.navigation.navigate('Settings')}
         iconRight={require('@resources/images/usuario_icon.png')}
       />

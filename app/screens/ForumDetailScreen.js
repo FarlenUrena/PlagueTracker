@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import {
   View,
   Text,
@@ -24,8 +24,11 @@ import {
 } from 'firebase/firestore';
 import {firebaseConfig} from '../../firebase-config';
 import {formatTimestamp} from '../utils/timestampFormatter';
+import {UserContext} from '@context/UserContext';
 
 export default function ForumDetailScreen(props) {
+  
+  const [login, loginAction, auth] = useContext(UserContext);
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
 
@@ -95,7 +98,7 @@ export default function ForumDetailScreen(props) {
 
       // Agrega un nuevo comentario a la colección de comentarios
       await addDoc(commentsCollectionRef, {
-        user: 'Nombre de Usuario', // Reemplaza con el nombre de usuario real
+        user: auth.name, // Reemplaza con el nombre de usuario real
         text: newComment,
         timestamp: serverTimestamp(),
         likes: 0,
@@ -138,9 +141,9 @@ export default function ForumDetailScreen(props) {
     <View style={{flex: 1, backgroundColor: color.GREEN_SLOW}}>
       <StatusBar backgroundColor={color.GREEN} translucent={true} />
       <ToolBar
-        titulo={`Detalle del foro ${forumId}`}
-        onPressLeft={() => props.navigation.navigate('Settings')}
-        iconLeft={require('@resources/images/configuraciones_icon.png')}
+        titulo={'Comentarios'}
+        onPressLeft={() => props.navigation.navigate('Main')}
+        iconLeft={require('@resources/images/back.png')}
         onPressRight={() => props.navigation.navigate('Settings')}
         iconRight={require('@resources/images/usuario_icon.png')}
       />

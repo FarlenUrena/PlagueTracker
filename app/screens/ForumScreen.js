@@ -35,6 +35,7 @@ function goToScreen(props, routeName, forumId) {
 export default function ForumScreen(props) {
   // const app = initializeApp(firebaseConfig);
   // const firestore = getFirestore(app);
+  const [login, loginAction, auth] = useContext(UserContext);
 
   const [searchTerm, setSearchTerm] = useState(''); // Estado para la barra de búsqueda
   const [isAddingForum, setIsAddingForum] = useState(false); // Estado para controlar la visualización del formulario
@@ -45,11 +46,10 @@ export default function ForumScreen(props) {
     replyCount: 0,
     group: '',
     likes: 0,
-    creator: '',
+    creator: auth,
   });
   const [loading, setLoading] = useState(true);
   const [forumData, setForumData] = useState([]);
-  const [login, loginAction, auth] = useContext(UserContext);
 
   const filteredForumData = forumData.filter(forum =>
     Object.values(forum).some(
@@ -134,7 +134,7 @@ export default function ForumScreen(props) {
       replyCount: 0,
       group: '',
       likes: 0,
-      creator: '',
+      creator: auth,
     });
   };
 
@@ -167,7 +167,6 @@ export default function ForumScreen(props) {
 
   return (
     <View style={{flex: 1}}>
-      
       {loading ? (
         <ActivityIndicator
           style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
@@ -182,8 +181,8 @@ export default function ForumScreen(props) {
           <StatusBar backgroundColor={color.GREEN} translucent={true} />
           <ToolBar
             titulo="Plage Tracker"
-            onPressLeft={() => props.navigation.navigate('Settings')}
-            iconLeft={require('@resources/images/configuraciones_icon.png')}
+            onPressLeft={() => props.navigation.navigate('Main')}
+            iconLeft={require('@resources/images/back.png')}
             onPressRight={() => props.navigation.navigate('Settings')}
             iconRight={require('@resources/images/usuario_icon.png')}
           />
