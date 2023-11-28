@@ -56,7 +56,7 @@ export default function MainScreen(props) {
     {
       name: 'Productos Recomendados',
       icon: productos_icon,
-      screen: 'ProductsScreen',
+      screen: 'Products',
     },
     {
       name: 'Condiciones de Reproducción',
