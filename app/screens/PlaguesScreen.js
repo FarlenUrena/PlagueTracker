@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Text,
   View,
@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
-import {Picker} from '@react-native-picker/picker';
-import {initializeApp} from 'firebase/app';
+import { Picker } from '@react-native-picker/picker';
+import { initializeApp } from 'firebase/app';
 import {
   getFirestore,
   collection,
@@ -21,9 +21,9 @@ import {
   addDoc,
   serverTimestamp,
 } from 'firebase/firestore';
-import {UserContext} from '@context/UserContext';
-import {ActivityIndicator} from 'react-native';
-import {firestore} from '../../firebase-config';
+import { UserContext } from '@context/UserContext';
+import { ActivityIndicator } from 'react-native';
+import { firestore } from '../../firebase-config';
 
 function goToScreen(props, routeName, plagueId) {
   props.navigation.navigate(routeName, {
@@ -39,12 +39,13 @@ export default function PlaguesScreen(props) {
   const [isAddingPlague, setIsAddingPlague] = useState(false); // Estado para controlar la visualización del formulario
   const [newPlagueData, setNewPlagueData] = useState({
     nombre: '',
-          cultivos:'',
-          condiciones_reproduccion: '',
-          ciclo_vida: '' ,
-          descripcion: '',
-          productos: '',
-          signos_infestacion: '',
+    cultivos: '',
+    condiciones_reproduccion: '',
+    ciclo_vida: '',
+    descripcion: '',
+    productos: '',
+    signos_infestacion: '',
+    como_enfrentarlas:'',
   });
   const [loading, setLoading] = useState(true);
   const [plagueData, setPlagueData] = useState([]);
@@ -71,6 +72,7 @@ export default function PlaguesScreen(props) {
           descripcion: doc.data().descripcion,
           productos: doc.data().productos,
           signos_infestacion: doc.data().signos_infestacion,
+          como_enfrentarlas:doc.data().como_enfrentarlas,
         }));
         setPlagueData(pests);
         setLoading(false);
@@ -90,26 +92,29 @@ export default function PlaguesScreen(props) {
   const closeForm = () => {
     setIsAddingPlague(false);
     setNewPlagueData({
-      title: '',
-      description: '',
-      createdAt: serverTimestamp(),
-      replyCount: 0,
-      group: '',
-      likes: 0,
-      creator: '',
+      nombre: '',
+    cultivos: '',
+    condiciones_reproduccion: '',
+    ciclo_vida: '',
+    descripcion: '',
+    productos: '',
+    signos_infestacion: '',
+    como_enfrentarlas:'',
     });
   };
 
   const handleSubmit = async () => {
     try {
       const newPlague = {
-        title: newPlagueData.title,
-        description: newPlagueData.description,
-        createdAt: serverTimestamp(),
-        replyCount: newPlagueData.replyCount,
-        group: newPlagueData.group,
-        likes: newPlagueData.likes,
-        creator: newPlagueData.creator,
+        nombre: newPlagueData.nombre,
+        cultivos: newPlagueData.cultivos,
+        condiciones_reproduccion: newPlagueData.condiciones_reproduccion,
+        ciclo_vida: newPlagueData.ciclo_vida,
+        descripcion: newPlagueData.descripcion,
+        productos: newPlagueData.productos,
+        signos_infestacion: newPlagueData.signos_infestacion,
+        como_enfrentarlas: newPlagueData.como_enfrentarlas,
+        
       };
 
       // Agrega el nuevo foro a la colección 'Plague' en Firebase
@@ -118,7 +123,7 @@ export default function PlaguesScreen(props) {
       // Actualiza el estado local si es necesario (opcional)
       setPlagueData(prevPlagueData => [
         ...prevPlagueData,
-        {...newPlague, id: docRef.id},
+        { ...newPlague, id: docRef.id },
       ]);
     } catch (error) {
       console.error('Error al agregar el foro:', error);
@@ -128,10 +133,10 @@ export default function PlaguesScreen(props) {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       {loading ? (
         <ActivityIndicator
-          style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           size="large"
           color={color.GREEN}
         />
@@ -139,7 +144,7 @@ export default function PlaguesScreen(props) {
         <ScrollView
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="always"
-          style={{backgroundColor: color.GREEN_SLOW}}>
+          style={{ backgroundColor: color.GREEN_SLOW }}>
           <StatusBar backgroundColor={color.GREEN} translucent={true} />
           <ToolBar
             titulo="Plage Tracker"
@@ -202,41 +207,83 @@ export default function PlaguesScreen(props) {
             <Text style={styles.label}>Título:</Text>
             <TextInput
               style={styles.formInput}
-              placeholder="Título"
-              value={newPlagueData.title}
+              placeholder="Nombre"
+              value={newPlagueData.nombre}
               onChangeText={text =>
-                setNewPlagueData({...newPlagueData, title: text})
+                setNewPlagueData({ ...newPlagueData, nombre: text })
               }
               placeholderTextColor={color.BLACK}
             />
             <Text style={styles.label}>Descripción:</Text>
             <TextInput
-              style={styles.formInputArea}
+              style={styles.formInput}
               placeholder="Descripción"
-              value={newPlagueData.description}
+              value={newPlagueData.descripcion}
               onChangeText={text =>
-                setNewPlagueData({...newPlagueData, description: text})
+                setNewPlagueData({ ...newPlagueData, descripcion: text })
               }
               multiline={true} // Habilita el campo de texto multilínea
-              numberOfLines={4} // Especifica el número de líneas que se mostrarán inicialmente
               placeholderTextColor={color.BLACK}
             />
-            {/* Selector de grupo */}
-            <Text style={styles.label}>Grupo a asociar:</Text>
-            <Picker
-              color="black"
-              selectionColor="black"
-              mode="dropdown"
-              selectedValue={newPlagueData.group}
-              onValueChange={(itemValue, itemIndex) =>
-                setNewPlagueData({...newPlagueData, group: itemValue})
+           
+            <Text style={styles.label}>Cultivos:</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Cultivos afectados"
+              value={newPlagueData.cultivos}
+              onChangeText={text =>
+                setNewPlagueData({ ...newPlagueData, cultivos: text })
               }
-              dropdownIconColor="black"
-              style={styles.groupPicker}>
-              <Picker.Item label="Plagas" value="Plagas" />
-              <Picker.Item label="Peces" value="Peces" />
-              <Picker.Item label="Plantas" value="Plantas" />
-            </Picker>
+              multiline={true} // Habilita el campo de texto multilínea
+              placeholderTextColor={color.BLACK} />
+            <Text style={styles.label}>Productos recomendados:</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="productos recomendados"
+              value={newPlagueData.productos}
+              onChangeText={text =>
+                setNewPlagueData({ ...newPlagueData, productos: text })
+              }
+              multiline={true} // Habilita el campo de texto multilínea
+              
+              placeholderTextColor={color.BLACK} />
+            <Text style={styles.label}>Condiciones de reprodución:</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Condiciones de reprodución"
+              value={newPlagueData.condiciones_reproduccion}
+              onChangeText={text =>
+                setNewPlagueData({ ...newPlagueData, condiciones_reproduccion: text })
+              }
+              multiline={true} // Habilita el campo de texto multilínea
+              placeholderTextColor={color.BLACK} />
+               {/*   
+          
+          ciclo_vida: '' ,
+          
+          
+          signos_infestacion: '',*/}
+          <Text style={styles.label}>Ciclo de vida:</Text>
+              <TextInput
+              style={styles.formInput}
+              placeholder="Ciclo de vida"
+              value={newPlagueData.ciclo_vida}
+              onChangeText={text =>
+                setNewPlagueData({ ...newPlagueData, ciclo_vida: text })
+              }
+              multiline={true} // Habilita el campo de texto multilínea
+              placeholderTextColor={color.BLACK} />
+              <Text style={styles.label}>Signos de infestación:</Text>
+              <TextInput
+              style={styles.formInput}
+              placeholder="Signos de infestación"
+              value={newPlagueData.signos_infestacion}
+              onChangeText={text =>
+                setNewPlagueData({ ...newPlagueData, signos_infestacion: text })
+              }
+              multiline={true} // Habilita el campo de texto multilínea
+              placeholderTextColor={color.BLACK} />
+
             {/* Agrega más campos de formulario según tus necesidades */}
             <View style={styles.buttonRow}>
               <Button
@@ -246,7 +293,7 @@ export default function PlaguesScreen(props) {
                 color={color.RED} // Cambia el color a verde
               />
               <Button
-                title="Agregar Foro"
+                title="Agregar plaga"
                 onPress={handleSubmit}
                 style={styles.button}
                 color={color.GREEN} // Cambia el color a verde
@@ -269,7 +316,7 @@ const styles = StyleSheet.create({
     margin: 5,
     elevation: 2,
     shadowColor: 'black',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
