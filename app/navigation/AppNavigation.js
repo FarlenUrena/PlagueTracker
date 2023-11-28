@@ -62,6 +62,9 @@ const AppNavigation = createStackNavigator({
   },
   Reproduction: {
     screen: ReproductionScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
   },
   Suppliers: {
     screen: SuppliersScreen,

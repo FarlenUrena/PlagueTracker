@@ -11,7 +11,6 @@ import {
   TextInput,
   Modal,
   FlatList,
-
   Button,
 } from 'react-native';
 import MyTextInput from '@components/MyTextInput';
@@ -24,17 +23,17 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import {firestore} from '../../firebase-config';
-import { Picker } from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 import color from '@styles/colors';
 import ToolBar from '../components/ToolBar';
 
-export default function ReproduccionScreen(props) {
+export default function ReproductionScreen(props) {
   const [pestName, setPestName] = useState('');
   const [cropName, setCropName] = useState('');
   const [pestsList, setPestsList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [pestsData, setForumData] = useState([]);
-  
+
   const [loading, setLoading] = useState(true);
   // const PestsData = [
   //   {
@@ -186,9 +185,9 @@ export default function ReproduccionScreen(props) {
   const searchPests = () => {
     // Simulando la búsqueda de plagas
     const filteredPests = pestsData.filter(
-      (pest) =>
+      pest =>
         pest.nombre.toLowerCase().includes(pestName.toLowerCase()) &&
-        pest.cultivos.toLowerCase().includes(cropName.toLowerCase())
+        pest.cultivos.toLowerCase().includes(cropName.toLowerCase()),
     );
     setPestsList(filteredPests);
   };
@@ -199,7 +198,7 @@ export default function ReproduccionScreen(props) {
       keyboardShouldPersistTaps="always"
       style={styles.container}>
       <ToolBar
-        titulo="Condiciones de Reproducción"
+        titulo="Cond. de Reproducción"
         onPressLeft={() => props.navigation.navigate('Main')}
         iconLeft={require('@resources/images/back.png')}
         onPressRight={() => props.navigation.navigate('Settings')}
@@ -216,13 +215,11 @@ export default function ReproduccionScreen(props) {
       />
       {/* <MyButton title="Buscar Plagas" onPress={searchPests} /> */}
       {/* aqui va el codigo */}
-      {filteredPestsData.map((pest, index) => (
-        <TouchableOpacity
-          style={styles.card}
-          key={index}
-          onPress={() => goToScreen(props, 'ReproductionDetail', pest.id)} // Llama a una función con el ID del foro
-        >
-          <View style={styles.card} key={index}>
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        filteredPestsData.map((pest, i) => (
+          <View style={styles.card} key={pest.i}>
             <View style={styles.cardContent}>
               <View style={styles.header}>
                 <Text style={styles.title}>{pest.nombre}</Text>
@@ -231,14 +228,13 @@ export default function ReproduccionScreen(props) {
                 </View>
               </View>
               <Text style={styles.info}>
-              Condiciones de reproduccion: {pest.condiciones_reproduccion}
+                Condiciones de reproduccion: {pest.condiciones_reproduccion}
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
-      ))}
+        ))
+      )}
     </ScrollView>
-
   );
 }
 
@@ -314,7 +310,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'green',
   },
   description: {
     fontSize: 16,
@@ -329,21 +325,24 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   creator: {
-    fontSize: 13,
-    color: 'darkgray',
+    fontSize: 14,
+    color: 'gray',
   },
   // Estilos para tus tarjetas de foro
   card: {
-    width: '100%',
+    width: '80%',
     flexDirection: 'row',
     backgroundColor: color.GREEN_SKY,
     borderRadius: 8,
     margin: 5,
     elevation: 2,
+    alignItems: 'center',
+    alignSelf: 'center',
     shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    padding: 10,
   },
   // Estilos para el botón flotante
   fab: {
