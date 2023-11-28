@@ -8,6 +8,8 @@ import RegisterScreen from '@screens/RegisterScreen';
 import SettingsScreen from '@screens/SettingsScreen';
 import ForumScreen from '@screens/ForumScreen';
 import ForumDetailScreen from '@screens/ForumDetailScreen';
+import ReproductionScreen from '@screens/ReproductionScreen';
+import SuppliersScreen from '@screens/SuppliersScreen';
 import UsersScreen from '@screens/UsersScreen';
 import ProductsScreen from '@screens/ProductsScreen';
 import DealPestsScreen from '@screens/DealPestsScreen';
@@ -62,8 +64,20 @@ const AppNavigation = createStackNavigator({
       headerShown: false,
     },
   },
+  Reproduction: {
+    screen: ReproductionScreen,
+   navigationOptions: {
+      headerShown: false,
+    },
+  },
   Users: {
     screen: UsersScreen,
+   navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Suppliers: {
+    screen: SuppliersScreen,
     navigationOptions: {
       headerShown: false,
     },

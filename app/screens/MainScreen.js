@@ -61,7 +61,7 @@ export default function MainScreen(props) {
     {
       name: 'Condiciones de Reproducción',
       icon: condicion_reproduccion_icon,
-      screen: 'ReproductionScreen',
+      screen: 'Reproduction',
     },
     // {
     //   name: 'Mapa de Afectación',
@@ -71,7 +71,7 @@ export default function MainScreen(props) {
     {
       name: 'Directorio de Proveedores',
       icon: directorio_icon,
-      screen: 'DirectoryScreen',
+      screen: 'Suppliers',
     },
     // {
     //   name: 'Contacto con Expertos',
