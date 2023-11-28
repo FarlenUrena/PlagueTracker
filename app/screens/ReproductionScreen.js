@@ -219,7 +219,7 @@ export default function ReproductionScreen(props) {
         <Text>Loading...</Text>
       ) : (
         filteredPestsData.map((pest, i) => (
-          <View style={styles.card} key={pest.i}>
+          <View style={styles.card} key={i}>
             <View style={styles.cardContent}>
               <View style={styles.header}>
                 <Text style={styles.title}>{pest.nombre}</Text>
