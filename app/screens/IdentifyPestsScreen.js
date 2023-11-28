@@ -199,7 +199,7 @@ export default function IdentifyPestsScreen(props) {
       keyboardShouldPersistTaps="always"
       style={styles.container}>
       <ToolBar
-        titulo="Combatir plagas"
+        titulo="Identificar plagas"
         onPressLeft={() => props.navigation.navigate('Main')}
         iconLeft={require('@resources/images/back.png')}
         onPressRight={() => props.navigation.navigate('Settings')}
