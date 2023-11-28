@@ -63,21 +63,21 @@ export default function MainScreen(props) {
       icon: condicion_reproduccion_icon,
       screen: 'ReproductionScreen',
     },
-    {
-      name: 'Mapa de Afectación',
-      icon: mapa_afectacion_icon,
-      screen: 'MapScreen',
-    },
+    // {
+    //   name: 'Mapa de Afectación',
+    //   icon: mapa_afectacion_icon,
+    //   screen: 'MapScreen',
+    // },
     {
       name: 'Directorio de Proveedores',
       icon: directorio_icon,
       screen: 'DirectoryScreen',
     },
-    {
-      name: 'Contacto con Expertos',
-      icon: contacto_icon,
-      screen: 'ContactScreen',
-    },
+    // {
+    //   name: 'Contacto con Expertos',
+    //   icon: contacto_icon,
+    //   screen: 'ContactScreen',
+    // },
     {name: 'Foro para Productores', icon: foro_icon, screen: 'Forum'},
     {
       name: 'Usuarios',
