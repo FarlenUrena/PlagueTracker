@@ -10,6 +10,7 @@ import ForumScreen from '@screens/ForumScreen';
 import ForumDetailScreen from '@screens/ForumDetailScreen';
 import ReproductionScreen from '@screens/ReproductionScreen';
 import SuppliersScreen from '@screens/SuppliersScreen';
+import PlaguesScreen from '@screens/PlaguesScreen';
 import UsersScreen from '@screens/UsersScreen';
 import ProductsScreen from '@screens/ProductsScreen';
 import DealPestsScreen from '@screens/DealPestsScreen';
@@ -78,6 +79,13 @@ const AppNavigation = createStackNavigator({
   },
   Suppliers: {
     screen: SuppliersScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+
+  Plagues: {
+    screen: PlaguesScreen,
     navigationOptions: {
       headerShown: false,
     },
