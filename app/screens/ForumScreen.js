@@ -24,6 +24,7 @@ import {
 import {UserContext} from '@context/UserContext';
 import {ActivityIndicator} from 'react-native';
 import {firestore} from '../../firebase-config';
+import {useFocusEffect} from '@react-navigation/native';
 
 function goToScreen(props, routeName, forumId) {
   props.navigation.navigate(routeName, {
@@ -71,29 +72,36 @@ export default function ForumScreen(props) {
     return `${formattedDate}, ${formattedTime}`;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getDocs(collection(firestore, 'Forum'));
-        const forums = data.docs.map(doc => ({
-          title: doc.data().title,
-          description: doc.data().description,
-          createdAt: doc.data().createdAt,
-          replyCount: doc.data().replyCount,
-          group: doc.data().group,
-          likes: doc.data().likes,
-          creator: doc.data().creator,
-          id: doc.id,
-        }));
-        setForumData(forums);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error al obtener datos del foro:', error);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const data = await getDocs(collection(firestore, 'Forum'));
+      const forums = data.docs.map(doc => ({
+        title: doc.data().title,
+        description: doc.data().description,
+        createdAt: doc.data().createdAt,
+        replyCount: doc.data().replyCount,
+        group: doc.data().group,
+        likes: doc.data().likes,
+        creator: doc.data().creator,
+        id: doc.id,
+      }));
+      setForumData(forums);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error al obtener datos del foro:', error);
+    }
+  };
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    const focusListener = props.navigation.addListener('didFocus', () => {
+      fetchData();
+    });
+
+    return () => {
+      // Remove the event listener when the component is unmounted
+      focusListener.remove();
+    };
+  }, []); // Empty dependency array means it runs once on mount
   // async function loadRTForum() {
   //   const subscriber = firebase()
   //     .collection('Forum')
@@ -159,6 +167,7 @@ export default function ForumScreen(props) {
 
   return (
     <View style={{flex: 1}}>
+      
       {loading ? (
         <ActivityIndicator
           style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}

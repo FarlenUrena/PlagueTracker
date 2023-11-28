@@ -14,6 +14,8 @@ import ToolBar from '../components/ToolBar';
 import {CheckBox, SocialIcon, Button} from 'react-native-elements';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {UserContext} from '@context/UserContext';
+import {firestore} from '../../firebase-config';
+import {addDoc, collection, doc, set} from 'firebase/firestore';
 
 function goToScreen(props, routeName) {
   props.navigation.navigate(routeName);
@@ -31,9 +33,18 @@ export default function RegisterScreen(props) {
 
   const handlerCreateAccount = () => {
     createUserWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        console.log('Account created successfully!');
+      .then(async userCredential => {
         const user = userCredential.user;
+
+        // Agregar el nuevo usuario a la colección "users" en Firestore
+        const userDocRef = collection(firestore, 'Users');
+        await addDoc(userDocRef, {
+          name: name + ' ' + lastName,
+          email: email,
+          roles: ['User'], // Rol por defecto
+        });
+
+        console.log('Account created successfully!');
         console.log(user);
         Alert.alert('Usuario creado correctamente.');
         goToScreen(props, 'Login');

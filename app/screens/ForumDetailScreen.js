@@ -113,7 +113,7 @@ export default function ForumDetailScreen(props) {
 
       // Actualizar la base de datos con la nueva cantidad
       await updateDoc(doc(firestore, `Forum/${cleanForumId}`), {
-        commentCount: newCommentCount,
+        replyCount: newCommentCount,
       });
 
       // Esperar a que la base de datos se actualice antes de desplazarse hacia abajo
@@ -204,57 +204,66 @@ export default function ForumDetailScreen(props) {
 
       {/* ScrollView de Comentarios */}
       <ScrollView ref={scrollViewRef} style={{flex: 1}}>
-        {comments.map(comment => (
-          <View
-            key={comment.id}
-            style={[
-              styles.commentContainer,
-              {
-                justifyContent: comment.isMine ? 'flex-end' : 'flex-start',
-              },
-            ]}>
-            <View style={styles.commentContent}>
-              <View
-                style={[
-                  styles.commentBubble,
-                  {
-                    alignSelf: comment.isMine ? 'flex-end' : 'flex-start',
-                    borderBottomLeftRadius: comment.isMine ? 16 : 0,
-                    borderBottomRightRadius: comment.isMine ? 0 : 16,
-                    backgroundColor: comment.isMine
-                      ? color.GREEN_SKY
-                      : color.SECONDARY,
-                  },
-                ]}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  {/* Avatar a la derecha */}
-                  <View style={styles.avatarContainer}>
-                    <Image
-                      source={require('@resources/images/usuario_icon.png')}
-                      style={styles.avatar}
-                    />
-                  </View>
-                  {/* Nombre a la izquierda */}
-                  <View style={{marginLeft: 8}}>
-                    <Text style={[styles.commentUserName, {color: 'black'}]}>
-                      {comment.user}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.commentText}>{comment.text}</Text>
-                <Text
+        {comments.length === 0 ? (
+          <View style={styles.noCommentsContainer}>
+            <Text style={styles.noCommentsText}>No hay comentarios aún :c</Text>
+            <Text style={styles.noCommentsText}>
+              ¡Sé el primero en comentar!
+            </Text>
+          </View>
+        ) : (
+          comments.map(comment => (
+            <View
+              key={comment.id}
+              style={[
+                styles.commentContainer,
+                {
+                  justifyContent: comment.isMine ? 'flex-end' : 'flex-start',
+                },
+              ]}>
+              <View style={styles.commentContent}>
+                <View
                   style={[
-                    styles.commentTimestamp,
+                    styles.commentBubble,
                     {
-                      color: color.GRAY,
+                      alignSelf: comment.isMine ? 'flex-end' : 'flex-start',
+                      borderBottomLeftRadius: comment.isMine ? 16 : 0,
+                      borderBottomRightRadius: comment.isMine ? 0 : 16,
+                      backgroundColor: comment.isMine
+                        ? color.GREEN_SKY
+                        : color.SECONDARY,
                     },
                   ]}>
-                  {comment.timestamp && formatTimestamp(comment.timestamp)}
-                </Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    {/* Avatar a la derecha */}
+                    <View style={styles.avatarContainer}>
+                      <Image
+                        source={require('@resources/images/usuario_icon.png')}
+                        style={styles.avatar}
+                      />
+                    </View>
+                    {/* Nombre a la izquierda */}
+                    <View style={{marginLeft: 8}}>
+                      <Text style={[styles.commentUserName, {color: 'black'}]}>
+                        {comment.user}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.commentText}>{comment.text}</Text>
+                  <Text
+                    style={[
+                      styles.commentTimestamp,
+                      {
+                        color: color.GRAY,
+                      },
+                    ]}>
+                    {comment.timestamp && formatTimestamp(comment.timestamp)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
 
       {/* Entrada de Comentario */}
@@ -390,5 +399,18 @@ const styles = StyleSheet.create({
   likesButtonText: {
     marginLeft: 8,
     color: color.BLACK,
+  },
+
+  //No comments
+
+  noCommentsContainer: {
+    flex: 1,
+    marginTop: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noCommentsText: {
+    fontSize: 18,
+    color: color.GRAY,
   },
 });
