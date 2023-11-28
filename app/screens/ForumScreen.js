@@ -35,7 +35,6 @@ function goToScreen(props, routeName, forumId) {
 export default function ForumScreen(props) {
   // const app = initializeApp(firebaseConfig);
   // const firestore = getFirestore(app);
-  const [login, loginAction, auth] = useContext(UserContext);
 
   const [searchTerm, setSearchTerm] = useState(''); // Estado para la barra de búsqueda
   const [isAddingForum, setIsAddingForum] = useState(false); // Estado para controlar la visualización del formulario
@@ -46,10 +45,11 @@ export default function ForumScreen(props) {
     replyCount: 0,
     group: '',
     likes: 0,
-    creator: auth,
+    creator: '',
   });
   const [loading, setLoading] = useState(true);
   const [forumData, setForumData] = useState([]);
+  const [login, loginAction, auth] = useContext(UserContext);
 
   const filteredForumData = forumData.filter(forum =>
     Object.values(forum).some(
@@ -134,7 +134,7 @@ export default function ForumScreen(props) {
       replyCount: 0,
       group: '',
       likes: 0,
-      creator: auth,
+      creator: '',
     });
   };
 

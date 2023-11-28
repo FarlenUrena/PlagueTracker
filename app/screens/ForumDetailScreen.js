@@ -98,7 +98,7 @@ export default function ForumDetailScreen(props) {
 
       // Agrega un nuevo comentario a la colección de comentarios
       await addDoc(commentsCollectionRef, {
-        user: auth.name, // Reemplaza con el nombre de usuario real
+        user: 'Default', // Reemplaza con el nombre de usuario real
         text: newComment,
         timestamp: serverTimestamp(),
         likes: 0,
