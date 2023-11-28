@@ -46,7 +46,7 @@ export default function MainScreen(props) {
     {
       name: 'Identificación de Plagas',
       icon: lupa_icon,
-      screen: 'IdentificationScreen',
+      screen: 'IdentifyPests',
     },
     {
       name: 'Cómo Enfrentar las Plagas',
